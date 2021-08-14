@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  # Database
+  db:
+    image: postgres:13-alpine
+    container_name: knex-database
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    image: node:16-alpine
+    container_name: knex-app
+    ports:
+      - "8080:8080"
+    user: node
+    environment:
+      - NODE_ENV=development
+    working_dir: /app
+    volumes:
+      - ./:/app
+    expose:
+      - 8080
+    command: "npm run dev"
+
+volumes:
+  pgdata:
+
+networks:
+  default:
+    name: knex-network
